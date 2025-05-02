@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"eks","Source":"./Modules/eks","Dir":"Modules/eks"},{"Key":"eks_nodegroup","Source":"./Modules/eks_nodegrouping","Dir":"Modules/eks_nodegrouping"}]}
