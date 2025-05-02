@@ -2,7 +2,7 @@
 env                       = "dev"
 cluster_name              = "gilead-emqx-eks-cluster"
 k8s_version               = "1.31"
-subnet_ids                = ["subnet-0754a03477fb5cd4e", "subnet-02c8a5d54d2e7ede8"]
+subnet_ids                = ["subnet-028a6369ffc3eba74", "subnet-05733f91ba1be9c97"]
 security_group_ids        = ["sg-0d14bf339f3d56ebf"]
 enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 public_access_cidrs       = ["0.0.0.0/0"]
