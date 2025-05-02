@@ -40,7 +40,7 @@ module "eks_nodegroup" {
   tags            = var.tags
 }
 
-module "eks_nodegroup" {
+module "vpc" {
   source          = "./Modules/VPC"
   vpc_cidr_block  =  var.vpc_cidr_block
   public_subnet_cidrs = var.public_subnet_cidrs
