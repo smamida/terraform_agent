@@ -13,8 +13,6 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = var.tags
 }
-
-
 resource "kubernetes_config_map" "aws_auth" {
   depends_on = [aws_eks_cluster.this]
 
@@ -22,7 +20,6 @@ resource "kubernetes_config_map" "aws_auth" {
     name      = "aws-auth"
     namespace = "kube-system"
   }
-
   data = {
     mapRoles = jsonencode([
       {
@@ -31,14 +28,13 @@ resource "kubernetes_config_map" "aws_auth" {
         groups   = ["system:masters"]
       },
       {
-        # rolearn  = "arn:aws:iam::025066239748:role/AWSReservedSSO_RestrictedAdmin_8caf7ff8d9e27f19"
-        role_arn =  "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_RestrictedAdmin_8caf7ff8d9e27f19"
+         rolearn  = "arn:aws:iam::809553749374:role/AWSReservedSSO_RestrictedAdmin_8caf7ff8d9e27f19"
+        #role_arn =  "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_RestrictedAdmin_8caf7ff8d9e27f19"
         username = "additional-user"
         groups   = ["system:masters"]
       }
     ])
   }
-
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [data]
@@ -134,4 +130,3 @@ resource "kubernetes_config_map" "aws_auth" {
 # data "aws_availability_zones" "available" {}
 
 # data "aws_caller_identity" "current" {}
-
