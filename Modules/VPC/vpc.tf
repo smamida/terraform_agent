@@ -1,16 +1,17 @@
 resource "aws_vpc" "vpc" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr_block
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
     Name = "test-vpc"
   }
 }
+
 resource "aws_subnet" "public_1" {
-  map_public_ip_on_launch = true
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = "ap-south-1a"
-  cidr_block              = "10.0.1.0/24" # Changed to unique CIDR block
+  availability_zone       = var.availability_zones[0]
+  cidr_block              = var.public_subnet_cidrs[0]
+  map_public_ip_on_launch = true
   tags = {
     Name = "test-public_subnet1"
   }
@@ -18,9 +19,9 @@ resource "aws_subnet" "public_1" {
 
 resource "aws_subnet" "public_2" {
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone       = "ap-south-1b"
+  availability_zone       = var.availability_zones[1]
+  cidr_block              = var.public_subnet_cidrs[1]
   map_public_ip_on_launch = true
-  cidr_block              = "10.0.2.0/24" # Changed to unique CIDR block
   tags = {
     Name = "test-public_subnet2"
   }
@@ -28,8 +29,8 @@ resource "aws_subnet" "public_2" {
 
 resource "aws_subnet" "private_1" {
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = "ap-south-1a"
-  cidr_block        = "10.0.3.0/24" # Changed to unique CIDR block
+  availability_zone = var.availability_zones[0]
+  cidr_block        = var.private_subnet_cidrs[0]
   tags = {
     Name = "test-private_subnet1"
   }
@@ -37,12 +38,13 @@ resource "aws_subnet" "private_1" {
 
 resource "aws_subnet" "private_2" {
   vpc_id            = aws_vpc.vpc.id
-  availability_zone = "ap-south-1b"
-  cidr_block        = "10.0.4.0/24" # Changed to unique CIDR block
+  availability_zone = var.availability_zones[1]
+  cidr_block        = var.private_subnet_cidrs[1]
   tags = {
     Name = "test-private_subnet2"
   }
 }
+
 #####################################################
 #Internet Gateway, NAT Gateway and EIP for NAT Gateway
 ######################################################
