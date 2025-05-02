@@ -95,6 +95,10 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
 
-      - name: Terraform Apply
-        run: terraform apply -var-file="dev.tfvars" -auto-approve tfplan
+      # - name: Terraform Apply
+      #   run: terraform apply -var-file="dev.tfvars" -auto-approve tfplan
+
+      - name: Terraform destroy
+        run: terraform destroy  -var-file="dev.tfvars" -auto-approve tfplan
+
 
