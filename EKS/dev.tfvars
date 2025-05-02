@@ -15,7 +15,7 @@ availability_zone       = "ap-south-1a"
 #node_grouping 
 node_group_name = "Emqx-nodegroup"
 instance_types  = ["t3.medium"]
-desired_size    = 2
+desired_size    = 1
 min_size        = 1
 max_size        = 5
 tags = {
