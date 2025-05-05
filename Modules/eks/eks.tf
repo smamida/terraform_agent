@@ -40,6 +40,37 @@ resource "kubernetes_config_map" "aws_auth" {
     ignore_changes        = [data]
   }
 }
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.main.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.main.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.main.token
+
+  # exec {
+  #   api_version = "client.authentication.k8s.io/v1beta1"
+  #   command     = "aws"
+  #   args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.main.name]
+  # }
+ }
+
+# # AWS EKS cluster data source
+data "aws_eks_cluster" "main" {
+  name = aws_eks_cluster.this.name
+}
+
+# # AWS EKS cluster authentication data source
+data "aws_eks_cluster_auth" "main" {
+  name = aws_eks_cluster.this.name
+}
+
+
+
+data "aws_availability_zones" "available" {}
+
+data "aws_caller_identity" "current" {}
+
+################old data###################
+
 # resource "aws_ebs_volume" "my_ebs_volume" {
 #   availability_zone = var.availability_zone #data.aws_availability_zones.available.names[0]
 #   size              = 10  
@@ -102,31 +133,3 @@ resource "kubernetes_config_map" "aws_auth" {
 #    # volume_name = "${kubernetes_persistent_volume.example.metadata.0.name}"
 #   }
 # }
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.main.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.main.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.main.token
-
-  # exec {
-  #   api_version = "client.authentication.k8s.io/v1beta1"
-  #   command     = "aws"
-  #   args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.main.name]
-  # }
- }
-
-# # AWS EKS cluster data source
-# data "aws_eks_cluster" "main" {
-#   name = aws_eks_cluster.this.name
-# }
-
-# # AWS EKS cluster authentication data source
-data "aws_eks_cluster_auth" "main" {
-  name = aws_eks_cluster.this.name
-}
-
-
-
-# data "aws_availability_zones" "available" {}
-
-# data "aws_caller_identity" "current" {}
