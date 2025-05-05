@@ -56,6 +56,71 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 }
 
+# ################old data###################
+
+resource "aws_ebs_volume" "my_ebs_volume" {
+  availability_zone = var.availability_zone #data.aws_availability_zones.available.names[0]
+  size              = 10  
+  type              = "gp3" #gp3
+  tags = {
+    Name = "my-ebs-volume"
+  }
+}
+
+resource "kubernetes_storage_class" "ebs_storage_class" {
+  metadata {
+    name = "ebs-storage-class"
+  }
+  storage_provisioner = "ebs.csi.aws.com" 
+  # parameters = {
+  #   type = "gp3" #gp3
+  # } #opt 
+  reclaim_policy      = "Retain"
+  # allow_volume_expansion = "true" 
+  volume_binding_mode = "Immediate" #"WaitForFirstConsumer" 
+}
+
+resource "kubernetes_persistent_volume" "example" {
+  metadata {
+    name = "examplevolumename"
+  }
+  spec {
+    capacity = {
+      storage = "10Gi"
+    }
+    access_modes = ["ReadWriteOnce"]
+    storage_class_name = kubernetes_storage_class.ebs_storage_class.metadata[0].name
+    persistent_volume_source {
+      aws_elastic_block_store {
+        volume_id = aws_ebs_volume.my_ebs_volume.id
+        fs_type   = "ext4"
+      }
+    }
+  }
+}
+
+resource "kubernetes_persistent_volume_claim" "example" {
+   depends_on = [
+    kubernetes_persistent_volume.example,
+    aws_ebs_volume.my_ebs_volume,
+    kubernetes_storage_class.ebs_storage_class
+  ]
+  metadata {
+    name = "exampleclaimname"
+  }
+  spec {
+    storage_class_name = kubernetes_storage_class.ebs_storage_class.metadata[0].name
+    #storage_class_name = "example-storage-class"
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "10Gi"
+      }
+    }
+   # volume_name = "${kubernetes_persistent_volume.example.metadata.0.name}"
+  }
+}
+
 
 # resource "aws_eks_cluster" "this" {
 #   name     = var.cluster_name
@@ -127,68 +192,3 @@ resource "kubernetes_config_map" "aws_auth" {
 # data "aws_availability_zones" "available" {}
 
 # data "aws_caller_identity" "current" {}
-
-# ################old data###################
-
-# # resource "aws_ebs_volume" "my_ebs_volume" {
-# #   availability_zone = var.availability_zone #data.aws_availability_zones.available.names[0]
-# #   size              = 10  
-# #   type              = "gp3" #gp3
-# #   tags = {
-# #     Name = "my-ebs-volume"
-# #   }
-# # }
-
-# # resource "kubernetes_storage_class" "ebs_storage_class" {
-# #   metadata {
-# #     name = "ebs-storage-class"
-# #   }
-# #   storage_provisioner = "ebs.csi.aws.com" 
-# #   # parameters = {
-# #   #   type = "gp3" #gp3
-# #   # } #opt 
-# #   reclaim_policy      = "Retain"
-# #   # allow_volume_expansion = "true" 
-# #   volume_binding_mode = "Immediate" #"WaitForFirstConsumer" 
-# # }
-
-# # resource "kubernetes_persistent_volume" "example" {
-# #   metadata {
-# #     name = "examplevolumename"
-# #   }
-# #   spec {
-# #     capacity = {
-# #       storage = "10Gi"
-# #     }
-# #     access_modes = ["ReadWriteOnce"]
-# #     storage_class_name = kubernetes_storage_class.ebs_storage_class.metadata[0].name
-# #     persistent_volume_source {
-# #       aws_elastic_block_store {
-# #         volume_id = aws_ebs_volume.my_ebs_volume.id
-# #         fs_type   = "ext4"
-# #       }
-# #     }
-# #   }
-# # }
-
-# # resource "kubernetes_persistent_volume_claim" "example" {
-# #    depends_on = [
-# #     kubernetes_persistent_volume.example,
-# #     aws_ebs_volume.my_ebs_volume,
-# #     kubernetes_storage_class.ebs_storage_class
-# #   ]
-# #   metadata {
-# #     name = "exampleclaimname"
-# #   }
-# #   spec {
-# #     storage_class_name = kubernetes_storage_class.ebs_storage_class.metadata[0].name
-# #     #storage_class_name = "example-storage-class"
-# #     access_modes = ["ReadWriteOnce"]
-# #     resources {
-# #       requests = {
-# #         storage = "10Gi"
-# #       }
-# #     }
-# #    # volume_name = "${kubernetes_persistent_volume.example.metadata.0.name}"
-# #   }
-# # }
