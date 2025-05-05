@@ -1,31 +1,3 @@
-# name: Terraform Destroy
-
-# on:
-#   workflow_dispatch:  # Manual trigger only
-#     inputs:
-#       environment:
-#         description: 'Environment to destroy'
-#         required: true
-#         default: 'Development'
-#         type: choice
-#         options:
-#           - Development
-#           - Staging
-#           - Production
-
-# permissions:
-#   id-token: write
-#   contents: read
-
-# jobs:
-#   destroy:
-#     name: Terraform Destroy
-#     runs-on: ubuntu-latest
-#     environment: ${{ github.event.inputs.environment }}
-
-#     steps:
-#       - name: Checkout code
-
 name: Terraform Deployment
 on:
   push:
@@ -64,7 +36,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::809553749374:role/github_actions
+          role-to-assume: arn:aws:iam::809553749374:role/github_actions 
           aws-region: ap-south-1
           
       - name: Terraform Format
@@ -77,14 +49,9 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      # - name: Terraform Plan
-      #   run: terraform plan -out=tfplan
-      #   continue-on-error: true
-
       - name: Terraform Plan
-        run: terraform plan -var-file="dev.tfvars" -out=tfplan
-        continue-on-error: false
-
+        run: terraform plan -out=tfplan
+        continue-on-error: true
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v4
@@ -112,7 +79,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::809553749374:role/Docker-ecr-automation
+          role-to-assume: arn:aws:iam::809553749374:role/github_actions
           aws-region: ap-south-1
 
       - name: Download Terraform Plan
@@ -124,9 +91,6 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply -var-file="dev.tfvars" -auto-approve tfplan
+        run: terraform apply -auto-approve tfplan
 
-      - name: Terraform destroy
-        run: terraform destroy  -var-file="dev.tfvars" -auto-approve tfplan
-
-
+    
