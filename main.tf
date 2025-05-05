@@ -39,12 +39,10 @@ module "eks_nodegroup" {
   subnet_ids      = var.subnet_ids #["subnet-065800cb667115781","subnet-0597e69946478cccf"]#["subnet-0681aafb825816409", "subnet-0dbefe1a726213995"]
   tags            = var.tags
 }
-
 module "vpc" {
   source          = "./Modules/VPC"
   vpc_cidr_block  =  var.vpc_cidr_block
   public_subnet_cidrs = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
    availability_zones = var.availability_zones
-
 }
