@@ -1,6 +1,6 @@
 #eks
 env                       = "dev"
-cluster_name              = "gilead-emqx-eks-cluster"
+cluster_name              = "Test-eks-cluster"
 k8s_version               = "1.31"
 subnet_ids                = ["subnet-028a6369ffc3eba74", "subnet-05733f91ba1be9c97"]
 security_group_ids        = ["sg-03917cf74c8b8025d"]
@@ -13,7 +13,7 @@ availability_zone       = "ap-south-1a"
 #vpc_id                    = "vpc-0d38241b7910def2a"
 
 #node_grouping 
-node_group_name = "Emqx-nodegroup"
+node_group_name = "Test-nodegroup"
 instance_types  = ["t3.medium"]
 desired_size    = 1
 min_size        = 1
@@ -22,8 +22,6 @@ tags = {
   "Environment" = "dev"
   "Project"     = "test-project"
 }
-
-
 # dev.tfvars
 vpc_cidr_block       = "10.0.0.0/16"
 availability_zones   = ["ap-south-1a", "ap-south-1b"]
