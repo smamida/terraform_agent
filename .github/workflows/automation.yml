@@ -1,40 +1,10 @@
-name: Terraform Destroy
+# name: Terraform Destroy
 
-on:
-  workflow_dispatch:  # Manual trigger only
-    inputs:
-      environment:
-        description: 'Environment to destroy'
-        required: true
-        default: 'Development'
-        type: choice
-        options:
-          - Development
-          - Staging
-          - Production
-
-permissions:
-  id-token: write
-  contents: read
-
-jobs:
-  destroy:
-    name: Terraform Destroy
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
-
-    steps:
-      - name: Checkout code
-
-# name: Terraform Deployment
 # on:
-#   push:
-#     branches:
-#       - main
-#   workflow_dispatch:
+#   workflow_dispatch:  # Manual trigger only
 #     inputs:
 #       environment:
-#         description: 'Deployment Environment'
+#         description: 'Environment to destroy'
 #         required: true
 #         default: 'Development'
 #         type: choice
@@ -48,85 +18,115 @@ jobs:
 #   contents: read
 
 # jobs:
-#   terraform-plan:
-#     name: Terraform Plan
+#   destroy:
+#     name: Terraform Destroy
 #     runs-on: ubuntu-latest
+#     environment: ${{ github.event.inputs.environment }}
 
 #     steps:
-#       - name: Checkout GitHub repository
-#         uses: actions/checkout@v4
+#       - name: Checkout code
 
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: latest
+name: Terraform Deployment
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'Development'
+        type: choice
+        options:
+          - Development
+          - Staging
+          - Production
 
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v3
-#         with:
-#           role-to-assume: arn:aws:iam::809553749374:role/Docker-ecr-automation
-#           aws-region: ap-south-1
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::809553749374:role/Docker-ecr-automation
+          aws-region: ap-south-1
           
-#       - name: Terraform Format
-#         run: terraform fmt --check
-#         continue-on-error: true
+      - name: Terraform Format
+        run: terraform fmt --check
+        continue-on-error: true
 
-#       - name: Terraform Init
-#         run: terraform init
+      - name: Terraform Init
+        run: terraform init
 
-#       - name: Terraform Validate
-#         run: terraform validate
+      - name: Terraform Validate
+        run: terraform validate
 
-#       # - name: Terraform Plan
-#       #   run: terraform plan -out=tfplan
-#       #   continue-on-error: true
+      # - name: Terraform Plan
+      #   run: terraform plan -out=tfplan
+      #   continue-on-error: true
 
-#       - name: Terraform Plan
-#         run: terraform plan -var-file="dev.tfvars" -out=tfplan
-#         continue-on-error: false
+      - name: Terraform Plan
+        run: terraform plan -var-file="dev.tfvars" -out=tfplan
+        continue-on-error: false
 
 
-#       - name: Upload Terraform Plan
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: terraform-plan
-#           path: tfplan
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: tfplan
 
-#   terraform-apply:
-#     name: Terraform Apply
-#     needs: terraform-plan  # Ensures apply runs only after the plan is complete
-#     runs-on: ubuntu-latest
-#     environment: Development
-#     permissions:
-#       id-token: write  # Needed for OIDC authentication
-#       contents: read
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
+  terraform-apply:
+    name: Terraform Apply
+    needs: terraform-plan  # Ensures apply runs only after the plan is complete
+    runs-on: ubuntu-latest
+    environment: Development
+    permissions:
+      id-token: write  # Needed for OIDC authentication
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           terraform_version: latest
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
 
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v3
-#         with:
-#           role-to-assume: arn:aws:iam::809553749374:role/Docker-ecr-automation
-#           aws-region: ap-south-1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::809553749374:role/Docker-ecr-automation
+          aws-region: ap-south-1
 
-#       - name: Download Terraform Plan
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: terraform-plan
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
 
-#       - name: Initialize Terraform
-#         run: terraform init
+      - name: Initialize Terraform
+        run: terraform init
 
-#       # - name: Terraform Apply
-#       #   run: terraform apply -var-file="dev.tfvars" -auto-approve tfplan
+      - name: Terraform Apply
+        run: terraform apply -var-file="dev.tfvars" -auto-approve tfplan
 
-#       - name: Terraform destroy
-#         run: terraform destroy  -var-file="dev.tfvars" -auto-approve tfplan
+      - name: Terraform destroy
+        run: terraform destroy  -var-file="dev.tfvars" -auto-approve tfplan
 
 
