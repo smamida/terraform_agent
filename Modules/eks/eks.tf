@@ -103,17 +103,17 @@ resource "kubernetes_config_map" "aws_auth" {
 #   }
 # }
 
-# provider "kubernetes" {
-#   host                   = data.aws_eks_cluster.main.endpoint
-#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.main.certificate_authority[0].data)
-#   token                  = data.aws_eks_cluster_auth.main.token
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.main.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.main.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.main.token
 
-# #   exec {
-# #     api_version = "client.authentication.k8s.io/v1beta1"
-# #     command     = "aws"
-# #     args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.main.name]
-# #   }
-#  }
+  # exec {
+  #   api_version = "client.authentication.k8s.io/v1beta1"
+  #   command     = "aws"
+  #   args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.main.name]
+  # }
+ }
 
 # # AWS EKS cluster data source
 # data "aws_eks_cluster" "main" {
@@ -121,9 +121,9 @@ resource "kubernetes_config_map" "aws_auth" {
 # }
 
 # # AWS EKS cluster authentication data source
-# data "aws_eks_cluster_auth" "main" {
-#   name = aws_eks_cluster.this.name
-# }
+data "aws_eks_cluster_auth" "main" {
+  name = aws_eks_cluster.this.name
+}
 
 
 
