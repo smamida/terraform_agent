@@ -64,7 +64,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::809553749374:role/Docker-ecr-automation
+          role-to-assume: arn:aws:iam::809553749374:role/github_actions
           aws-region: ap-south-1
           
       - name: Terraform Format
