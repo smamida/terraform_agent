@@ -12,6 +12,8 @@ resource "aws_eks_cluster" "this" {
   }
   enabled_cluster_log_types = var.enabled_cluster_log_types
   tags                      = var.tags
+
+  depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
 }
 
 data "aws_eks_cluster" "main" {
@@ -45,11 +47,6 @@ resource "kubernetes_config_map" "aws_auth" {
       {
         rolearn  = aws_iam_role.eks_cluster.arn
         username = "eks-admin"
-        groups   = ["system:masters"]
-      },
-      {
-        rolearn  = "arn:aws:iam::809553749374:role/AWSReservedSSO_RestrictedAdmin_8caf7ff8d9e27f19"
-        username = "additional-user"
         groups   = ["system:masters"]
       }
     ])
