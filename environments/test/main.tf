@@ -1,0 +1,33 @@
+module "infrastructure" {
+  source = "../.."
+
+  aws_region                = var.aws_region
+  env                       = var.env
+  cluster_name              = var.cluster_name
+  k8s_version               = var.k8s_version
+  subnet_ids                = var.subnet_ids
+  security_group_ids        = var.security_group_ids
+  enabled_cluster_log_types = var.enabled_cluster_log_types
+  public_access_cidrs       = var.public_access_cidrs
+  endpoint_public_access    = var.endpoint_public_access
+  endpoint_private_access   = var.endpoint_private_access
+  availability_zone         = var.availability_zone
+  node_group_name            = var.node_group_name
+  instance_types             = var.instance_types
+  desired_size               = var.desired_size
+  min_size                   = var.min_size
+  max_size                   = var.max_size
+  tags                       = var.tags
+  vpc_cidr_block             = var.vpc_cidr_block
+  public_subnet_cidrs        = var.public_subnet_cidrs
+  private_subnet_cidrs       = var.private_subnet_cidrs
+  availability_zones         = var.availability_zones
+  platform_bucket_name        = var.platform_bucket_name
+  kms_alias_name              = var.kms_alias_name
+  kms_description             = var.kms_description
+  log_group_name              = var.log_group_name
+  log_retention_days          = var.log_retention_days
+  queue_name                  = var.queue_name
+  secret_name                 = var.secret_name
+  secret_description          = var.secret_description
+}

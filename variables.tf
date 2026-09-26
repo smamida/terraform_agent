@@ -1,6 +1,17 @@
+variable "aws_region" {
+  description = "AWS region in which to deploy the infrastructure."
+  type        = string
+  default     = "ap-south-1"
+}
+
 variable "env" {
   description = "The environment for the deployment (e.g., dev, prod)."
   type        = string
+
+  validation {
+    condition     = contains(["dev", "test", "qa", "stage", "prod"], var.env)
+    error_message = "env must be dev, test, qa, stage, or prod."
+  }
 }
 
 variable "cluster_name" {
@@ -86,13 +97,88 @@ variable "tags" {
 
 
 # variables.tf
-variable "vpc_cidr_block" {}
-variable "public_subnet_cidrs" {
-  type = list(string)
+variable "vpc_cidr_block" {
+  description = "CIDR block for the VPC managed by the VPC module."
+  type        = string
+
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr_block, 0))
+    error_message = "vpc_cidr_block must be a valid IPv4 CIDR block."
+  }
 }
+variable "public_subnet_cidrs" {
+  description = "CIDR blocks for the public subnets."
+  type        = list(string)
+
+  validation {
+    condition = length(var.public_subnet_cidrs) == 2 && alltrue([
+      for cidr in var.public_subnet_cidrs : can(cidrhost(cidr, 0))
+    ])
+    error_message = "Provide exactly two valid public subnet CIDR blocks."
+  }
+}
+
 variable "private_subnet_cidrs" {
-  type = list(string)
+  description = "CIDR blocks for the private subnets."
+  type        = list(string)
+
+  validation {
+    condition = length(var.private_subnet_cidrs) == 2 && alltrue([
+      for cidr in var.private_subnet_cidrs : can(cidrhost(cidr, 0))
+    ])
+    error_message = "Provide exactly two valid private subnet CIDR blocks."
+  }
 }
 variable "availability_zones" {
-  type = list(string)
+  description = "Availability zones used by the two-AZ VPC module."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.availability_zones) == 2
+    error_message = "Exactly two availability zones are required."
+  }
+}
+
+variable "platform_bucket_name" {
+  description = "Globally unique S3 bucket for platform artifacts."
+  type        = string
+}
+
+variable "kms_alias_name" {
+  description = "KMS alias suffix for environment encryption."
+  type        = string
+}
+
+variable "kms_description" {
+  description = "Purpose of the environment KMS key."
+  type        = string
+}
+
+variable "log_group_name" {
+  description = "CloudWatch log group for shared platform logs."
+  type        = string
+}
+
+variable "log_retention_days" {
+  description = "Number of days to retain shared platform logs."
+  type        = number
+  validation {
+    condition     = var.log_retention_days >= 1
+    error_message = "log_retention_days must be at least one day."
+  }
+}
+
+variable "queue_name" {
+  description = "SQS queue and SNS topic base name."
+  type        = string
+}
+
+variable "secret_name" {
+  description = "Secrets Manager secret container name."
+  type        = string
+}
+
+variable "secret_description" {
+  description = "Purpose of the Secrets Manager secret container."
+  type        = string
 }
