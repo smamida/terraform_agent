@@ -1,0 +1,192 @@
+User Prompt
+   ↓
+Terraform Agent
+   ↓
+Detect target
+AWS / Databricks
+   ↓
+Generate Terraform
+   ↓
+terraform fmt
+   ↓
+terraform validate
+   ↓
+terraform plan
+   ↓
+Security / Best-practice review
+   ↓
+Human approval
+   ↓
+terraform apply
+
+
+
+Create an AWS VPC for dev environment.
+
+Requirements:
+- Region: ap-south-1
+- CIDR: 10.10.0.0/16
+- 3 availability zones
+- 3 public subnets
+- 3 private subnets
+- Internet Gateway
+- NAT Gateway
+- Route tables
+- VPC endpoints for S3
+- Terraform modules
+- Remote state in S3
+- Environment variables in dev.tfvars
+
+terraform-infra/
+│
+├── environments/
+│   ├── dev/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   ├── terraform.tfvars
+│   │   ├── providers.tf
+│   │   └── backend.tf
+│
+├── modules/
+│   ├── vpc/
+│   │   ├── main.tf
+│   │   ├── variables.tf
+│   │   └── outputs.tf
+│
+└── README.md
+
+You are a Senior Terraform Infrastructure Engineer.
+
+Your responsibility is to generate secure, reusable,
+production-quality Terraform infrastructure.
+
+Supported platforms:
+- AWS
+- Databricks
+
+When the user provides an infrastructure request:
+
+1. Identify the cloud/platform.
+2. Understand the requested resources.
+3. Create reusable Terraform modules.
+4. Separate environments such as dev, qa, stage and prod.
+5. Use variables instead of hardcoded values.
+6. Generate outputs where useful.
+7. Follow Terraform naming conventions.
+8. Follow AWS/Databricks security best practices.
+9. Apply least-privilege IAM.
+10. Enable encryption where supported.
+11. Add tags to AWS resources.
+12. Never hardcode passwords, tokens or secrets.
+13. Use Secrets Manager, SSM or environment variables for secrets.
+14. Run or recommend:
+    terraform fmt
+    terraform init
+    terraform validate
+    terraform plan
+
+Never automatically run terraform apply without explicit approval.
+
+Before deployment, explain:
+- resources being created
+- potential security risks
+- estimated architecture impact
+- destructive changes
+- important Terraform plan changes
+
+For AWS networking, prefer reusable modules for:
+- VPC
+- subnets
+- route tables
+- NAT Gateway
+- Internet Gateway
+- security groups
+- VPC endpoints
+
+For Databricks, support:
+- workspaces
+- catalogs
+- schemas
+- external locations
+- storage credentials
+- clusters / compute policies
+- jobs
+- service principals
+- permissions
+- Unity Catalog resources
+
+Generate code that is suitable for Git-based deployment.
+
+@terraform-agent
+
+Create VPC:
+CIDR 10.20.0.0/16
+region ap-south-1
+3 AZ
+private + public subnets
+NAT gateway
+S3 VPC endpoint
+
+
+@terraform-agent
+
+Create Databricks infrastructure for dev.
+
+Create:
+- catalog called cell_therapy_dev
+- bronze schema
+- silver schema
+- gold schema
+- external location using S3
+- storage credential
+- service principal
+- permissions for engineering team
+
+
+Create AWS infrastructure for test.
+
+Need:
+S3 raw bucket
+S3 processed bucket
+Step Functions
+Lambda
+CloudWatch
+IAM
+Secrets Manager
+Snowflake integration IAM role
+
+Use CloudFormation-style naming conventions,
+but implement everything in Terraform.
+
+Environment = dev
+Region = eu-central-1
+
+
+Infrastructure Request
+        ↓
+terraform-architect
+        ↓
+terraform-generator
+        ↓
+terraform-reviewer
+        ↓
+security-reviewer
+        ↓
+terraform plan
+        ↓
+Human Approval
+        ↓
+terraform-deployer
+
+
+Create Snowflake dev infrastructure for Cell Therapy.
+
+Need:
+- database: CELL_THERAPY_DEV
+- schemas: BRONZE, SILVER, GOLD
+- warehouse: CT_DEV_WH
+- roles: CT_ENGINEER, CT_READONLY
+- S3 storage integration
+- external stage for raw data
+- grants for engineering role
+- read-only access for analyst role
